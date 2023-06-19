@@ -22,45 +22,83 @@ function init() {
     500,
   );
 
-  const geometry = new THREE.BoxGeometry(2, 2, 2)
-  const meterial = new THREE.MeshStandardMaterial({ color: 0xcc99ff })
+  const cubeGeometry = new THREE.IcosahedronBufferGeometry(1)
+  const cubeMeterial = new THREE.MeshLambertMaterial({
+    // color: 0xcc99ff
+    color: new THREE.Color(0x00ffff),
+    emissive: 0x111111,
+  })
 
-  const cube = new THREE.Mesh(geometry, meterial)
+  const cube = new THREE.Mesh(cubeGeometry, cubeMeterial)
 
-  scene.add(cube)
+  const skeletonGeometry = new THREE.IcosahedronBufferGeometry(2)
+  const skeletonMeterial = new THREE.MeshBasicMaterial({
+    wireframe: true,
+    transparent: true,
+    opacity: 0.2,
+    color: 0xaaaaaa,
+  })
 
+  const skeleton = new THREE.Mesh(skeletonGeometry, skeletonMeterial)
 
-  camera.position.set(3, 4, 5);
+  scene.add(cube, skeleton)
 
-  camera.lookAt(cube.position);
+  // camera.position.set(3, 4, 5);
+  camera.position.z = 5;
 
-  const directionlLight = new THREE.DirectionalLight(0xf0f0f0, 1);
+  // camera.lookAt(cube.position);
 
-  directionlLight.position.set(-1, 2, 3);
-
+  const directionlLight = new THREE.DirectionalLight(0xffffff, 1);
+  // directionlLight.position.set(-1, 2, 3);
   scene.add(directionlLight);
 
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
+  // const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
+  // ambientLight.position.set(3, 2, 1)
+  // scene.add(ambientLight);
 
-  ambientLight.position.set(3, 2, 1)
-
-  scene.add(ambientLight);
+  // clock인스턴스 사용하기
+  const clock = new THREE.Clock();
 
   render();
 
   function render() {
+    const elapsedTime = clock.getElapsedTime();
+
+    // 본래 렌더링 될때 라디안이 단위이나 MathUtils함수를 이용하여 deg단위로 변경 가능
+    // cube.rotation.x = THREE.MathUtils.degToRad(45);
+
+    //Date.now함수 사용하기
+    // cube.rotation.x = Date.now() / 1000;
+
+    // clock인스턴스 사용하기
+    cube.rotation.x = clock.getElapsedTime();
+    cube.rotation.y = clock.getElapsedTime();
+    // cube.rotation.x += clock.getElapsedTime();
+
+    skeleton.rotation.x = clock.getElapsedTime() * 1.5;
+    skeleton.rotation.y = clock.getElapsedTime() * 1.5;
+
+    // 그 외 scale과 position 변경하는 에니메이션
+    // cube.position.y = Math.sin(cube.rotation.x);
+    // cube.scale.x = Math.cos(cube.rotation.x);
+
     renderer.render(scene, camera);
 
+    // 에니메이션을 삽입하기 위한 코드 -> 매 프레임마다 애니메이션을 호출하는 함수 (큐브의 속성을 변경하는 코드를 삽입해야 에니메이션 작동 시작!)
     requestAnimationFrame(render);
   }
 
+  //창크기에 따라 메소드가 동일한 비율로 리사이즈되도록하는 코드
   function handleResize() {
+    // 렌더링 시 카메라의 종횡비 업데이트
     camera.aspect = window.innerWidth / window.innerHeight;
 
     camera.updateProjectionMatrix();
 
+    // 렌더링 화면 업데이트하는 코드
     renderer.setSize(window.innerWidth, window.innerHeight);
 
+    // 새롭게 랜더된 결과를 화면에 반영하는 코드
     renderer.render(scene, camera);
   }
 
