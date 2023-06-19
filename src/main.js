@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
 window.addEventListener('load', function () {
   init();
@@ -21,6 +22,20 @@ function init() {
     1,
     500,
   );
+
+  const controls = new OrbitControls(camera, renderer.domElement);
+
+  controls.autoRotate = true;
+  controls.enableDamping = true; // 마우스를 통해 드래그할때 관성을 나타내주는 효과
+  controls.enableZoom = true;
+  controls.enablePan = true;
+  // controls.maxDistance = 50; // 줌범위 조절
+  // controls.minDistance = 10; // 줌범위 조절
+  // controls.maxAzimuthAngle = Math.PI / 2; // 회적각도 조절
+  // controls.minAzimuthAngle = Math.PI / 3; // 회적각도 조절
+
+  // const axesHelper = new THREE.AxesHelper(5)
+  // scene.add(axesHelper);
 
   const cubeGeometry = new THREE.IcosahedronBufferGeometry(1)
   const cubeMeterial = new THREE.MeshLambertMaterial({
@@ -71,18 +86,20 @@ function init() {
     // cube.rotation.x = Date.now() / 1000;
 
     // clock인스턴스 사용하기
-    cube.rotation.x = clock.getElapsedTime();
-    cube.rotation.y = clock.getElapsedTime();
+    // cube.rotation.x = clock.getElapsedTime();
+    // cube.rotation.y = clock.getElapsedTime();
     // cube.rotation.x += clock.getElapsedTime();
 
-    skeleton.rotation.x = clock.getElapsedTime() * 1.5;
-    skeleton.rotation.y = clock.getElapsedTime() * 1.5;
+    // skeleton.rotation.x = clock.getElapsedTime() * 1.5;
+    // skeleton.rotation.y = clock.getElapsedTime() * 1.5;
 
     // 그 외 scale과 position 변경하는 에니메이션
     // cube.position.y = Math.sin(cube.rotation.x);
     // cube.scale.x = Math.cos(cube.rotation.x);
 
     renderer.render(scene, camera);
+
+    controls.update();
 
     // 에니메이션을 삽입하기 위한 코드 -> 매 프레임마다 애니메이션을 호출하는 함수 (큐브의 속성을 변경하는 코드를 삽입해야 에니메이션 작동 시작!)
     requestAnimationFrame(render);
@@ -100,6 +117,8 @@ function init() {
 
     // 새롭게 랜더된 결과를 화면에 반영하는 코드
     renderer.render(scene, camera);
+
+    controls.update();
   }
 
   window.addEventListener('resize', handleResize);
